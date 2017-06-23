@@ -1,7 +1,5 @@
-/**
- * react-native-swiper
- * @author leecade<leecade@163.com>
- */
+import Evil from 'react-native-vector-icons/EvilIcons';
+import QuantaViewPager from './QuantaViewPager';
 import React, { Component, PropTypes } from 'react'
 import {
   Text,
@@ -21,72 +19,28 @@ const { width, height } = Dimensions.get('window')
  * @type {StyleSheetPropType}
  */
 const styles = {
-  container: {
-    backgroundColor: 'transparent',
-    position: 'relative'
-  },
-
-  wrapper: {
-    backgroundColor: 'transparent'
-  },
-
   slide: {
     backgroundColor: 'transparent'
   },
-
-  pagination_x: {
-    position: 'absolute',
-    bottom: 25,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent'
-  },
-
-  pagination_y: {
-    position: 'absolute',
-    right: 15,
-    top: 0,
-    bottom: 0,
-    flexDirection: 'column',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent'
-  },
-
-  title: {
-    height: 30,
-    justifyContent: 'center',
-    position: 'absolute',
-    paddingLeft: 10,
-    bottom: -30,
-    left: 0,
-    flexWrap: 'nowrap',
-    width: 250,
-    backgroundColor: 'transparent'
-  },
-
   buttonWrapper: {
-    backgroundColor: 'transparent',
     flexDirection: 'row',
     position: 'absolute',
-    top: 0,
+    top: 20,
     left: 0,
+    right:0,
     flex: 1,
     paddingHorizontal: 10,
     paddingVertical: 10,
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-
+arrow:{
+    fontSize: 60,
+    color: 'rgba(255,255,255,0.5)',
+  },
   buttonText: {
-    fontSize: 50,
-    color: '#007aff',
-    fontFamily: 'Arial'
+    marginLeft:-20,
+    marginRight:-20,
   }
 }
 
@@ -446,65 +400,12 @@ export default class extends Component {
     return overrides
   }
 
-  /**
-   * Render pagination
-   * @return {object} react-dom
-   */
-  renderPagination = () => {
-     // By default, dots only show when `total` >= 2
-    if (this.state.total <= 1) return null
-
-    let dots = []
-    const ActiveDot = this.props.activeDot || <View style={[{
-      backgroundColor: this.props.activeDotColor || '#007aff',
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      marginLeft: 3,
-      marginRight: 3,
-      marginTop: 3,
-      marginBottom: 3
-    }, this.props.activeDotStyle]} />
-    const Dot = this.props.dot || <View style={[{
-      backgroundColor: this.props.dotColor || 'rgba(0,0,0,.2)',
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      marginLeft: 3,
-      marginRight: 3,
-      marginTop: 3,
-      marginBottom: 3
-    }, this.props.dotStyle ]} />
-    for (let i = 0; i < this.state.total; i++) {
-      dots.push(i === this.state.index
-        ? React.cloneElement(ActiveDot, {key: i})
-        : React.cloneElement(Dot, {key: i})
-      )
-    }
-
-    return (
-      <View pointerEvents='none' style={[styles['pagination_' + this.state.dir], this.props.paginationStyle]}>
-        {dots}
-      </View>
-    )
-  }
-
-  renderTitle = () => {
-    const child = this.props.children[this.state.index]
-    const title = child && child.props && child.props.title
-    return title
-      ? (<View style={styles.title}>
-        {this.props.children[this.state.index].props.title}
-      </View>)
-      : null
-  }
-
   renderNextButton = () => {
     let button = null
 
     if (this.props.loop ||
       this.state.index !== this.state.total - 1) {
-      button = this.props.nextButton || <Text style={styles.buttonText}>›</Text>
+      button = this.props.nextButton || <Text style={[styles.buttonText,styles.buttonTextLeft]}><Evil name={'chevron-right'} style={styles.arrow} /></Text>
     }
 
     return (
@@ -520,7 +421,7 @@ export default class extends Component {
     let button = null
 
     if (this.props.loop || this.state.index !== 0) {
-      button = this.props.prevButton || <Text style={styles.buttonText}>‹</Text>
+      button = this.props.prevButton || <Text style={[styles.buttonText,styles.buttonTextRight]}><Evil name={'chevron-left'} style={styles.arrow} /></Text>
     }
 
     return (
@@ -531,13 +432,9 @@ export default class extends Component {
       </TouchableOpacity>
     )
   }
-
   renderButtons = () => {
     return (
-      <View pointerEvents='box-none' style={[styles.buttonWrapper, {
-        width: this.state.width,
-        height: this.state.height
-      }, this.props.buttonWrapperStyle]}>
+      <View pointerEvents='box-none' style={styles.buttonWrapper}>
         {this.renderPrevButton()}
         {this.renderNextButton()}
       </View>
@@ -560,13 +457,15 @@ export default class extends Component {
        )
     }
     return (
-      <ViewPagerAndroid ref='scrollView'
-        {...this.props}
-        initialPage={this.props.loop ? this.state.index + 1 : this.state.index}
-        onPageSelected={this.onScrollEnd}
-        style={{flex: 1}}>
-        {pages}
-      </ViewPagerAndroid>
+        <QuantaViewPager navigator={this.props.navigator}>
+          <ViewPagerAndroid ref='scrollView'
+            {...this.props}
+            initialPage={this.props.loop ? this.state.index + 1 : this.state.index}
+            onPageSelected={this.onScrollEnd}
+            style={{flex: 1}}>
+            {pages}
+          </ViewPagerAndroid>
+        </QuantaViewPager>
     )
   }
 
@@ -630,10 +529,6 @@ export default class extends Component {
         height: state.height
       }]}>
         {this.renderScrollView(pages)}
-        {props.showsPagination && (props.renderPagination
-          ? this.props.renderPagination(state.index, state.total, this)
-          : this.renderPagination())}
-        {this.renderTitle()}
         {this.props.showsButtons && this.renderButtons()}
       </View>
     )
