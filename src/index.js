@@ -1,6 +1,7 @@
 import Evil from 'react-native-vector-icons/EvilIcons';
 import QuantaViewPager from './QuantaViewPager';
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types';
 import {
   Text,
   View,
@@ -9,10 +10,12 @@ import {
   TouchableOpacity,
   ViewPagerAndroid,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  ViewPropTypes as RNViewPropTypes
 } from 'react-native'
 
 const { width, height } = Dimensions.get('window')
+export const ViewPropTypes = RNViewPropTypes || View.propTypes;
 
 /**
  * Default styles
@@ -54,7 +57,7 @@ export default class extends Component {
   static propTypes = {
     horizontal: PropTypes.bool,
     children: PropTypes.node.isRequired,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     pagingEnabled: PropTypes.bool,
     showsHorizontalScrollIndicator: PropTypes.bool,
     showsVerticalScrollIndicator: PropTypes.bool,
